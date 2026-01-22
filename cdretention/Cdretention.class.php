@@ -1,7 +1,7 @@
 <?php
 namespace FreePBX\modules;
 
-class Cdretention implements \BMO, \FreePBX\Console {
+class Cdretention implements \BMO {
     public function __construct($FreePBX = null) {
         if ($FreePBX == null) {
             throw new \Exception("No FreePBX Object");
@@ -11,25 +11,47 @@ class Cdretention implements \BMO, \FreePBX\Console {
         $this->db = $this->FreePBX->Database; 
     }
 
+    public function getConfig($key) {
+        $sql = "SELECT value FROM cdretention_settings WHERE `key` = :key";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute(array(':key' => $key));
+        $res = $stmt->fetch(\PDO::FETCH_ASSOC);
+        return $res ? $res['value'] : null;
+    }
+
+    public function setConfig($key, $value) {
+        $sql = "INSERT INTO cdretention_settings (`key`, `value`) VALUES (:key, :value) ON DUPLICATE KEY UPDATE `value` = :value";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute(array(':key' => $key, ':value' => $value));
+    }
+
     public function install() {
+        // Crear tabla de configuración local si no existe
+        $sql = "CREATE TABLE IF NOT EXISTS cdretention_settings (
+            `key` VARCHAR(50) PRIMARY KEY,
+            `value` VARCHAR(255)
+        )";
+        $this->db->query($sql);
+
         // Programar tarea diaria a las 01:00 AM
         $this->FreePBX->Cron->add("0 1 * * * /usr/sbin/fwconsole cdretention purge");
 
 
         // 2. Establecer el valor por defecto si no existe
-        if ($this->FreePBX->Config->get_conf_setting('CDRPURGE_DAYS') === null) {
-            $this->FreePBX->Config->set_conf_setting('CDRPURGE_DAYS', 30);
+        if ($this->getConfig('purge_days') === null) {
+            $this->setConfig('purge_days', 30);
         }
 
     }
 
     public function uninstall() {
         $this->FreePBX->Cron->remove("/usr/sbin/fwconsole cdretention purge");
+        $this->db->query("DROP TABLE IF EXISTS cdretention_settings");
     }
 
     public function purgeOldRecords($days = null) {
         if ($days === null) {
-            $days = $this->FreePBX->Config->get_conf_setting('CDRPURGE_DAYS');
+            $days = $this->getConfig('purge_days');
         }
         
         if (!is_numeric($days) || $days < 1) return 0;

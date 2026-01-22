@@ -8,7 +8,7 @@ $msg = "";
 // 1. Acción: Guardar Configuración
 if (isset($_POST['action']) && $_POST['action'] == 'save') {
     $days = intval($_POST['purge_days']);
-    $fpbx->Config->set_conf_setting('CDRPURGE_DAYS', $days);
+    $fpbx->Cdretention->setConfig('purge_days', $days);
     $msg = '<div class="alert alert-success">Configuración guardada correctamente.</div>';
 }
 
@@ -19,7 +19,7 @@ if (isset($_POST['action']) && $_POST['action'] == 'purge_now') {
     $msg = '<div class="alert alert-warning">Purga completada: Se eliminaron ' . $count . ' registros.</div>';
 }
 
-$current_days = $fpbx->Config->get_conf_setting('CDRPURGE_DAYS');
+$current_days = $fpbx->Cdretention->getConfig('purge_days');
 $current_days = ($current_days !== null) ? $current_days : 30;
 ?>
 
