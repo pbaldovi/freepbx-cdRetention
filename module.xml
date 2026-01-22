@@ -1,0 +1,13 @@
+<module>
+    <rawname>cdretention</rawname>
+    <repo>local</repo>
+    <name>CDR Retention policy</name>
+    <version>1.0.1</version>
+    <publisher>Admin</publisher>
+    <license>GPLv3+</license>
+    <description>Limpia registros antiguos de la tabla CDR basados en una configuración de días.</description>
+    <menuitems>
+        <cdrpurger>cdretention</cdrpurger>
+    </menuitems>
+    <category>Admin</category>
+</module>
