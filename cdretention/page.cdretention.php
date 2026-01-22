@@ -3,21 +3,7 @@ if (!defined('FREEPBX_IS_AUTH')) { die('No direct script access allowed'); }
 
 // Invocamos el framework de forma segura
 $fpbx = \FreePBX::create();
-$msg = "";
-
-// 1. Acción: Guardar Configuración
-if (isset($_POST['action']) && $_POST['action'] == 'save') {
-    $days = intval($_POST['purge_days']);
-    $fpbx->Cdretention->setConfig('purge_days', $days);
-    $msg = '<div class="alert alert-success">Configuración guardada correctamente.</div>';
-}
-
-// 2. Acción: Purgar Ahora
-if (isset($_POST['action']) && $_POST['action'] == 'purge_now') {
-    // Llamamos a la función de nuestra clase
-    $count = $fpbx->Cdretention->purgeOldRecords();
-    $msg = '<div class="alert alert-warning">Purga completada: Se eliminaron ' . $count . ' registros.</div>';
-}
+$msg = $fpbx->Cdretention->message;
 
 $current_days = $fpbx->Cdretention->getConfig('purge_days');
 $current_days = ($current_days !== null) ? $current_days : 30;

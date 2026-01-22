@@ -11,6 +11,21 @@ class Cdretention implements \BMO {
         $this->db = $this->FreePBX->Database; 
     }
 
+    public $message = "";
+
+    public function doConfigPageInit($page) {
+        if (isset($_POST['action']) && $_POST['action'] == 'save') {
+            $days = intval($_POST['purge_days']);
+            $this->setConfig('purge_days', $days);
+            $this->message = '<div class="alert alert-success">Configuración guardada correctamente.</div>';
+        }
+
+        if (isset($_POST['action']) && $_POST['action'] == 'purge_now') {
+            $count = $this->purgeOldRecords();
+            $this->message = '<div class="alert alert-warning">Purga completada: Se eliminaron ' . $count . ' registros.</div>';
+        }
+    }
+
     public function getConfig($key) {
         $sql = "SELECT value FROM cdretention_settings WHERE `key` = :key";
         $stmt = $this->db->prepare($sql);
