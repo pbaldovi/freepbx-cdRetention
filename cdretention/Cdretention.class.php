@@ -13,11 +13,18 @@ class Cdretention implements \BMO {
 
     public function install() {
         // Programar tarea diaria a las 01:00 AM
-        $this->FreePBX->Cron->add("0 1 * * * /usr/sbin/fwconsole cdrpurger purge");
+        $this->FreePBX->Cron->add("0 1 * * * /usr/sbin/fwconsole cdretention purge");
+
+
+        // 2. Establecer el valor por defecto si no existe
+        if ($this->FreePBX->Config->get_conf_setting('CDRPURGE_DAYS') === null) {
+            $this->FreePBX->Config->set_conf_setting('CDRPURGE_DAYS', 30);
+        }
+
     }
 
     public function uninstall() {
-        $this->FreePBX->Cron->remove("/usr/sbin/fwconsole cdrpurger purge");
+        $this->FreePBX->Cron->remove("/usr/sbin/fwconsole cdretention purge");
     }
 
     public function purgeOldRecords($days = null) {
