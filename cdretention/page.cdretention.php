@@ -1,54 +1,55 @@
 <?php
 if (!defined('FREEPBX_IS_AUTH')) { die('No direct script access allowed'); }
 
+// Invocamos el framework de forma segura
+$fpbx = \FreePBX::create();
 $msg = "";
 
 // 1. Acción: Guardar Configuración
 if (isset($_POST['action']) && $_POST['action'] == 'save') {
     $days = intval($_POST['purge_days']);
-    $FreePBX->Config->set_conf_setting('CDRPURGE_DAYS', $days);
-    $msg = '<div class="alert alert-success">Configuración guardada.</div>';
+    $fpbx->Config->set_conf_setting('CDRPURGE_DAYS', $days);
+    $msg = '<div class="alert alert-success">Configuración guardada correctamente.</div>';
 }
 
 // 2. Acción: Purgar Ahora
 if (isset($_POST['action']) && $_POST['action'] == 'purge_now') {
-    $count = $FreePBX->Cdretention->purgeOldRecords();
-    $msg = '<div class="alert alert-warning">Purga manual completada: ' . $count . ' registros eliminados.</div>';
+    // Llamamos a la función de nuestra clase
+    $count = $fpbx->Cdretention->purgeOldRecords();
+    $msg = '<div class="alert alert-warning">Purga completada: Se eliminaron ' . $count . ' registros.</div>';
 }
 
-$current_days = $FreePBX->Config->get_conf_setting('CDRPURGE_DAYS');
+$current_days = $fpbx->Config->get_conf_setting('CDRPURGE_DAYS');
 $current_days = ($current_days !== null) ? $current_days : 30;
 ?>
 
 <div class="container-fluid">
-    <h1>Purgador Automático de CDR</h1>
+    <h1><i class="fa fa-history"></i> Retención de CDR</h1>
     <?php echo $msg; ?>
 
     <div class="row">
         <div class="col-sm-6">
-            <div class="panel panel-default">
-                <div class="panel-heading">Configuración de Retención</div>
+            <form method="post" class="panel panel-default">
+                <div class="panel-heading">Días de Historial</div>
                 <div class="panel-body">
-                    <form method="post">
-                        <input type="hidden" name="action" value="save">
-                        <div class="form-group">
-                            <label>Días de historial a mantener:</label>
-                            <input type="number" name="purge_days" class="form-control" value="<?php echo $current_days; ?>">
-                        </div>
-                        <button type="submit" class="btn btn-primary">Guardar Días</button>
-                    </form>
+                    <input type="hidden" name="action" value="save">
+                    <div class="form-group">
+                        <label>Mantener registros por (días):</label>
+                        <input type="number" name="purge_days" class="form-control" value="<?php echo $current_days; ?>">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Actualizar Configuración</button>
                 </div>
-            </div>
+            </form>
         </div>
 
         <div class="col-sm-6">
             <div class="panel panel-danger">
-                <div class="panel-heading">Acciones Manuales</div>
+                <div class="panel-heading">Ejecución Manual</div>
                 <div class="panel-body">
-                    <p>Si deseas limpiar la base de datos inmediatamente usando los días configurados:</p>
+                    <p>Borrar registros más antiguos de <b><?php echo $current_days; ?> días</b> ahora mismo:</p>
                     <form method="post">
                         <input type="hidden" name="action" value="purge_now">
-                        <button type="submit" class="btn btn-danger" onclick="return confirm('¿Estás seguro de querer borrar los datos antiguos ahora?')">
+                        <button type="submit" class="btn btn-danger" onclick="return confirm('¿Seguro que quieres borrar los registros antiguos?')">
                             <i class="fa fa-trash"></i> Purgar Ahora
                         </button>
                     </form>

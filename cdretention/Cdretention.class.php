@@ -1,7 +1,7 @@
 <?php
 namespace FreePBX\modules;
 
-class Cdretention implements \BMO {
+class Cdretention implements \BMO, \FreePBX\Console {
     public function __construct($FreePBX = null) {
         if ($FreePBX == null) {
             throw new \Exception("No FreePBX Object");
@@ -42,8 +42,8 @@ class Cdretention implements \BMO {
         return $stmt->rowCount();
     }
 
-    // Permite ejecutar 'fwconsole cdrpurger purge' desde SSH
-    public function abmoconsolecommands() {
+    // Permite ejecutar 'fwconsole cdretention purge' desde SSH
+    public function getConsoleCommands() {
         return array(
             'purge' => array(
                 'description' => 'Purga manual de CDR',

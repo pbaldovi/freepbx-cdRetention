@@ -3,11 +3,11 @@
     <repo>local</repo>
     <name>CDR Retention policy</name>
     <version>1.0.1</version>
-    <publisher>Admin</publisher>
+    <publisher>NST Group</publisher>
     <license>GPLv3+</license>
     <description>Limpia registros antiguos de la tabla CDR basados en una configuración de días.</description>
     <menuitems>
-        <cdrpurger>cdretention</cdrpurger>
+        <cdretention>CDR Retention</cdretention>
     </menuitems>
     <category>Admin</category>
 </module>
