@@ -2,12 +2,24 @@
     <rawname>cdretention</rawname>
     <repo>local</repo>
     <name>CDR Retention policy</name>
-    <version>1.0.3</version>
+    <version>1.0.28</version>
     <publisher>NST Group</publisher>
     <license>GPLv3+</license>
     <description>Limpia registros antiguos de la tabla CDR basados en una configuración de días.</description>
     <menuitems>
         <cdretention>CDR Retention</cdretention>
     </menuitems>
+    <console>
+        <command>
+            <name>cdretention</name>
+            <class>CdretentionCommand</class>
+        </command>
+    </console>
+    <database>
+        <table name="cdretention_settings">
+            <field name="key" type="string" length="50" primary="true"/>
+            <field name="value" type="string" length="255"/>
+        </table>
+    </database>
     <category>Admin</category>
 </module>
